@@ -1,19 +1,28 @@
+import { useState } from "react";
 import "./App.css";
-import marble1 from "./assets/styling/marble-1.jpg";
-import { ScoreCard } from "./scorecard/ScoreCard";
+import type { GameState } from "./GameState";
+import { GameProvider } from "./GameContext";
+import { Game } from "./Game";
 
 function App() {
+  const [gameState, setGameState] = useState<GameState>({
+    step: "notStarted",
+    scores: {
+      "Architect 1": {
+        houses: { numStars: 0, numPieces: 0 },
+        markets: { numStars: 0, numPieces: 0 },
+        barracks: { numStars: 0, numPieces: 0 },
+        temples: { numStars: 0, numPieces: 0 },
+        gardens: { numStars: 0, numPieces: 0 },
+        numCubes: 0,
+      },
+    },
+  });
+
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        backgroundImage: `url(${marble1})`,
-        backgroundRepeat: "repeat",
-        backgroundSize: "1920px 979px",
-      }}
-    >
-      <ScoreCard />
-    </div>
+    <GameProvider initialState={gameState} onStateChange={setGameState}>
+      <Game />
+    </GameProvider>
   );
 }
 

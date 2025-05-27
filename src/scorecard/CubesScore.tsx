@@ -1,16 +1,11 @@
-import { useState } from "react";
+import { useGameState } from "../GameContext";
 
-export const CubesScore = ({
-  onScoreChange,
-}: {
-  onScoreChange: (score: number) => void;
-}) => {
-  const [numCubes, setNumCubes] = useState(0);
+export const CubesScore = ({ playerName }: { playerName: string }) => {
+  const { gameState, updateNumCubes } = useGameState();
 
   const handleCubesChange = (value: number) => {
     const newCubes = Math.max(0, value);
-    setNumCubes(newCubes);
-    onScoreChange(newCubes);
+    updateNumCubes(playerName, newCubes);
   };
 
   return (
@@ -19,7 +14,7 @@ export const CubesScore = ({
         type="number"
         min="0"
         max="99"
-        value={numCubes}
+        value={gameState.scores[playerName].numCubes}
         onChange={(e) => handleCubesChange(parseInt(e.target.value) || 0)}
         className="bg-white text-center"
       />

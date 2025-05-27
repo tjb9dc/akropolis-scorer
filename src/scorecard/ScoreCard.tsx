@@ -1,49 +1,41 @@
-import { useState } from "react";
 import houseImg from "../assets/pieces/house.png";
 import playersImg from "../assets/icons/players.png";
 import marketImg from "../assets/pieces/market.png";
 import barracksImg from "../assets/pieces/barracks.png";
 import templeImg from "../assets/pieces/temple.png";
 import gardenImg from "../assets/pieces/garden.png";
-import cubeImg from "../assets/pieces/cube.png";
 import { PiecesScore } from "./PiecesScore";
-import { CubesScore } from "./CubesScore";
+import { useGameState } from "../GameContext";
+import type { GameState } from "../GameState";
 
 type Category = {
   name: string;
   img: string;
+  imgWidth?: number;
+  type: keyof Omit<GameState["scores"][string], "cubes">;
 };
 
 const categories: Category[] = [
-  { name: "Houses", img: houseImg },
-  { name: "Markets", img: marketImg },
-  { name: "Barracks", img: barracksImg },
-  { name: "Temples", img: templeImg },
-  { name: "Gardens", img: gardenImg },
+  { name: "Houses", img: houseImg, type: "houses" },
+  { name: "Markets", img: marketImg, type: "markets" },
+  { name: "Barracks", img: barracksImg, type: "barracks" },
+  { name: "Temples", img: templeImg, type: "temples" },
+  { name: "Gardens", img: gardenImg, type: "gardens" },
 ];
 
 export const ScoreCard = () => {
-  const players = ["Player 1", "Player 2"];
-  const [scores, setScores] = useState<Record<string, number[]>>({});
+  const { gameState } = useGameState();
 
-  const handleScoreChange = (
-    category: string,
-    playerIndex: number,
-    score: number
-  ) => {
-    setScores((prev) => ({
-      ...prev,
-      [category]: Object.assign(
-        [],
-        prev[category] || Array(players.length).fill(0),
-        { [playerIndex]: score }
-      ),
-    }));
-  };
+  const calculateTotalScore = (playerId: string) => {
+    if (!gameState.scores[playerId]) return 0;
 
-  const getTotalScore = (playerIndex: number) => {
-    return Object.values(scores).reduce(
-      (total, categoryScores) => total + (categoryScores[playerIndex] || 0),
+    return Object.entries(gameState.scores[playerId]).reduce(
+      (total, [type, score]) => {
+        if (type === "cubes") {
+          return total + score;
+        }
+        return total + score.numStars * score.numPieces;
+      },
       0
     );
   };
@@ -58,7 +50,7 @@ export const ScoreCard = () => {
                 <th className="border border-gray-300 p-2">
                   <img src={playersImg} alt="Players" className="w-16" />
                 </th>
-                {players.map((player, index) => (
+                {Object.keys(gameState.scores).map((player, index) => (
                   <th key={index} className="border border-gray-300 p-2">
                     {player}
                   </th>
@@ -66,57 +58,35 @@ export const ScoreCard = () => {
               </tr>
             </thead>
             <tbody>
-              {categories.map((category, index) => (
-                <tr key={index}>
-                  <td className="border border-gray-300 p-2">
+              {categories.map((category) => (
+                <tr key={category.type}>
+                  <td className="border border-gray-300 p-2 flex items-center justify-center">
                     <img
                       src={category.img}
                       alt={category.name}
-                      className="w-16 drop-shadow-lg mx-auto"
+                      className={`w-${category.imgWidth ?? 16} drop-shadow-lg`}
                     />
                   </td>
-                  {players.map((_, playerIndex) => (
-                    <td
-                      key={playerIndex}
-                      className="border border-gray-300 p-2"
-                    >
+                  {Object.keys(gameState.scores).map((playerId) => (
+                    <td key={playerId} className="border border-gray-300 p-2">
                       <PiecesScore
-                        onScoreChange={(score) =>
-                          handleScoreChange(category.name, playerIndex, score)
-                        }
+                        playerName={playerId}
+                        pieceType={category.type}
                       />
                     </td>
                   ))}
                 </tr>
               ))}
-              <tr key="cubes">
-                <td className="border border-gray-300 p-2">
-                  <img
-                    src={cubeImg}
-                    alt="Cubes"
-                    className="w-10 drop-shadow-lg mx-auto"
-                  />
-                </td>
-                {players.map((_, playerIndex) => (
-                  <td key={playerIndex} className="border border-gray-300 p-2">
-                    <CubesScore
-                      onScoreChange={(score) =>
-                        handleScoreChange("Cubes", playerIndex, score)
-                      }
-                    />
-                  </td>
-                ))}
-              </tr>
               <tr>
                 <td className="border border-gray-300 p-2 font-bold text-center">
                   Total
                 </td>
-                {players.map((_, index) => (
+                {Object.keys(gameState.scores).map((playerId) => (
                   <td
-                    key={index}
+                    key={playerId}
                     className="border border-gray-300 p-2 text-center font-bold"
                   >
-                    {getTotalScore(index)}
+                    {calculateTotalScore(playerId)}
                   </td>
                 ))}
               </tr>

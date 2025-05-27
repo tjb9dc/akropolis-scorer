@@ -1,25 +1,26 @@
-import { useState } from "react";
 import star from "../assets/icons/star.png";
 import hexagon from "../assets/icons/hexagon.png";
+import { useGameState } from "../GameContext";
+import type { GameState, PiecesState } from "../GameState";
 
 export const PiecesScore = ({
-  onScoreChange,
+  playerName,
+  pieceType,
 }: {
-  onScoreChange: (score: number) => void;
+  playerName: string;
+  pieceType: keyof Omit<GameState["scores"][string], "cubes">;
 }) => {
-  const [numStars, setNumStars] = useState(0);
-  const [numPieces, setNumPieces] = useState(0);
+  const { gameState, updateNumPieces, updateNumStars } = useGameState();
+  const score = gameState.scores[playerName][pieceType] as PiecesState;
 
   const handleStarsChange = (value: number) => {
     const newStars = Math.max(0, value);
-    setNumStars(newStars);
-    onScoreChange(newStars * numPieces);
+    updateNumStars(playerName, pieceType, newStars);
   };
 
   const handlePiecesChange = (value: number) => {
     const newPieces = Math.max(0, value);
-    setNumPieces(newPieces);
-    onScoreChange(numStars * newPieces);
+    updateNumPieces(playerName, pieceType, newPieces);
   };
 
   return (
@@ -28,10 +29,11 @@ export const PiecesScore = ({
         <div className="relative w-12 h-12">
           <img src={star} alt="" className="object-contain -z-10" />
           <input
+            inputMode="numeric"
             type="number"
             min="0"
             max="99"
-            value={numStars}
+            value={score.numStars}
             onChange={(e) => handleStarsChange(parseInt(e.target.value) || 0)}
             className="absolute inset-0 p-2 rounded bg-transparent text-center"
           />
@@ -43,13 +45,13 @@ export const PiecesScore = ({
             type="number"
             min="0"
             max="99"
-            value={numPieces}
+            value={score.numPieces}
             onChange={(e) => handlePiecesChange(parseInt(e.target.value) || 0)}
             className="absolute inset-0 p-2 rounded bg-transparent text-center"
           />
         </div>
       </div>
-      <div className="text-center">= {numStars * numPieces}</div>
+      <div className="text-center">= {score.numStars * score.numPieces}</div>
     </div>
   );
 };
