@@ -14,7 +14,7 @@ export const CubesCell = ({ playerName }: { playerName: string }) => {
       <NumericInput
         value={gameState.scores[playerName].numCubes}
         onChange={(value) => handleCubesChange(value)}
-        className="w-8 h-8 bg-white text-center"
+        className="w-8 h-8 bg-white text-center text-xs"
       />
     </div>
   );

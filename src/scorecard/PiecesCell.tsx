@@ -25,27 +25,29 @@ export const PiecesCell = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4">
-        <div className="relative w-12 h-12">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center">
+        <div className="relative w-8 h-8">
           <img src={star} alt="" className="object-contain -z-10" />
           <NumericInput
             value={score.numStars}
             onChange={(value) => handleStarsChange(value)}
-            className="absolute inset-0 p-2 rounded bg-transparent text-center"
+            className="absolute inset-0 p-1 rounded bg-transparent text-center text-xs"
           />
         </div>
-        x
-        <div className="relative w-12 h-12">
+        <span className="text-xs">×</span>
+        <div className="relative w-8 h-8">
           <img src={hexagon} alt="" className="object-contain -z-10" />
           <NumericInput
             value={score.numPieces}
             onChange={(value) => handlePiecesChange(value)}
-            className="absolute inset-0 p-2 rounded bg-transparent text-center"
+            className="absolute inset-0 p-1 rounded bg-transparent text-center text-xs"
           />
         </div>
       </div>
-      <div className="text-center">= {score.numStars * score.numPieces}</div>
+      <div className="text-center text-xs">
+        = {score.numStars * score.numPieces}
+      </div>
     </div>
   );
 };

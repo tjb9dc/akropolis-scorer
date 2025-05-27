@@ -24,6 +24,7 @@ interface GameContextType {
   updateNumCubes: (playerName: string, score: number) => void;
   nextStep: () => void;
   previousStep: () => void;
+  goToScorecard: () => void;
   resetGame: () => void;
   addPlayer: (playerName: string) => void;
   removePlayer: (playerName: string) => void;
@@ -181,6 +182,12 @@ export function GameProvider({
           onStateChange({
             ...initialState,
             step: previousStep(initialState.step),
+          });
+        },
+        goToScorecard: () => {
+          onStateChange({
+            ...initialState,
+            step: "done",
           });
         },
         resetGame,

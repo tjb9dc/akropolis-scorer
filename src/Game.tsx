@@ -1,6 +1,8 @@
 import { useGameState } from "./GameContext";
 import marble1 from "./assets/styling/marble-1.jpg";
 import { ScoreCard } from "./scorecard/ScoreCard";
+import { BackButton } from "./utils/BackButton";
+import { StepNavigation } from "./utils/StepNavigation";
 import { CubesWizard } from "./wizard/CubesWizard";
 import { PiecesWizard } from "./wizard/PiecesWizard";
 
@@ -12,20 +14,26 @@ const defaultPlayerNames = [
 ];
 
 export const Game = () => {
-  const { gameState, addPlayer, removePlayer, updatePlayerName, nextStep } =
-    useGameState();
+  const {
+    gameState,
+    addPlayer,
+    removePlayer,
+    updatePlayerName,
+    nextStep,
+    resetGame,
+  } = useGameState();
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-screen w-screen h-screen fixed inset-0"
       style={{
         backgroundImage: `url(${marble1})`,
         backgroundRepeat: "repeat",
-        backgroundSize: "1920px 979px",
+        backgroundSize: "cover",
       }}
     >
       {gameState.step === "notStarted" ? (
-        <div className="flex flex-col items-center pt-16 gap-8">
+        <div className="flex flex-col items-center pt-16">
           <div className="p-8">
             <h2 className="text-2xl font-bold mb-4">Players</h2>
             <div className="flex flex-col gap-2">
@@ -40,7 +48,7 @@ export const Game = () => {
                   <button
                     onClick={() => removePlayer(player)}
                     disabled={Object.keys(gameState.scores).length <= 1}
-                    className="text-red-600 px-2 py-1 rounded hover:bg-red-100"
+                    className="text-red-600 rounded hover:bg-red-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                   >
                     ✕
                   </button>
@@ -53,7 +61,7 @@ export const Game = () => {
                   )
                 }
                 disabled={Object.keys(gameState.scores).length >= 4}
-                className="border border-gray-300"
+                className="border border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed"
               >
                 Add architect
               </button>
@@ -68,12 +76,26 @@ export const Game = () => {
         </div>
       ) : gameState.step !== "done" ? (
         gameState.step !== "cubes" ? (
-          <PiecesWizard />
+          <>
+            <BackButton />
+            <PiecesWizard />
+            <StepNavigation />
+          </>
         ) : (
-          <CubesWizard />
+          <>
+            <BackButton />
+            <CubesWizard />
+            <StepNavigation />
+          </>
         )
       ) : (
-        <ScoreCard />
+        <>
+          <BackButton />
+          <ScoreCard />
+          <div className="flex items-center justify-center p-2">
+            <button onClick={resetGame}>Play Again</button>
+          </div>
+        </>
       )}
     </div>
   );

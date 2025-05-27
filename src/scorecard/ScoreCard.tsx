@@ -25,7 +25,7 @@ const categories: Category[] = [
 ];
 
 export const ScoreCard = () => {
-  const { gameState, previousStep, resetGame } = useGameState();
+  const { gameState } = useGameState();
 
   const calculateTotalScore = (playerName: string) => {
     return Object.entries(gameState.scores[playerName]).reduce(
@@ -40,16 +40,16 @@ export const ScoreCard = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
-      <div className="border border-gray-300 rounded">
+    <div className="flex-1 flex flex-col items-center">
+      <div className="border border-gray-300 rounded text-sm">
         <table className="border-collapse">
           <thead>
             <tr>
-              <th className="border border-gray-300 p-2">
-                <img src={playersImg} alt="Players" className="w-16" />
+              <th className="p-2">
+                <img src={playersImg} alt="Players" className="w-8" />
               </th>
               {Object.keys(gameState.scores).map((player, index) => (
-                <th key={index} className="border border-gray-300 p-2">
+                <th key={index} className="border border-gray-300 p-2 text-sm">
                   {player}
                 </th>
               ))}
@@ -58,11 +58,11 @@ export const ScoreCard = () => {
           <tbody>
             {categories.map((category) => (
               <tr key={category.type}>
-                <td className="border border-gray-300 p-2 flex items-center justify-center">
+                <td className="border border-gray-300 text-center p-2">
                   <img
                     src={category.img}
                     alt={category.name}
-                    className={`w-${category.imgWidth ?? 16} drop-shadow-lg`}
+                    className="w-8 drop-shadow-lg inline-block"
                   />
                 </td>
                 {Object.keys(gameState.scores).map((playerName) => (
@@ -77,7 +77,7 @@ export const ScoreCard = () => {
             ))}
             <tr key="cubes">
               <td className="border border-gray-300 p-2 flex items-center justify-center">
-                <img src={cube} alt="cube" className={`w-12 drop-shadow-lg`} />
+                <img src={cube} alt="cube" className="w-6 drop-shadow-lg" />
               </td>
               {Object.keys(gameState.scores).map((playerName) => (
                 <td key={playerName} className="border border-gray-300 p-2">
@@ -86,13 +86,13 @@ export const ScoreCard = () => {
               ))}
             </tr>
             <tr>
-              <td className="border border-gray-300 p-2 font-bold text-center">
+              <td className="border border-gray-300 p-2 font-bold text-center text-sm">
                 Total
               </td>
               {Object.keys(gameState.scores).map((playerName) => (
                 <td
                   key={playerName}
-                  className="border border-gray-300 p-2 text-center font-bold"
+                  className="border border-gray-300 p-2 text-center font-bold text-sm"
                 >
                   {calculateTotalScore(playerName)}
                 </td>
@@ -100,10 +100,6 @@ export const ScoreCard = () => {
             </tr>
           </tbody>
         </table>
-      </div>
-      <div className="flex justify-between w-full">
-        <button onClick={previousStep}>Previous</button>
-        <button onClick={resetGame}>Play again</button>
       </div>
     </div>
   );
