@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -7,6 +8,7 @@ export default defineConfig({
   base: "/akropolis-scorer/",
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
@@ -16,7 +18,7 @@ export default defineConfig({
       injectRegister: "auto",
       manifest: {
         name: "Akropolis Scorer",
-        short_name: "Akropolis Scorer",
+        short_name: "Akropolis",
         start_url: "/akropolis-scorer/",
         display: "standalone",
         background_color: "#ffffff",
