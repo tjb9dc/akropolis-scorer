@@ -12,7 +12,14 @@ export type Step = (typeof steps)[number];
 
 export const nextStep = (step: Step): Step => {
   const index = steps.indexOf(step);
+  if (index === steps.length - 1) return "done";
   return steps[index + 1];
+};
+
+export const previousStep = (step: Step): Step => {
+  const index = steps.indexOf(step);
+  if (index === 0) return "notStarted";
+  return steps[index - 1];
 };
 
 export interface PiecesState {

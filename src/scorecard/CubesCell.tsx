@@ -1,6 +1,7 @@
 import { useGameState } from "../GameContext";
+import { NumericInput } from "../utils/NumericInput";
 
-export const CubesScore = ({ playerName }: { playerName: string }) => {
+export const CubesCell = ({ playerName }: { playerName: string }) => {
   const { gameState, updateNumCubes } = useGameState();
 
   const handleCubesChange = (value: number) => {
@@ -10,13 +11,10 @@ export const CubesScore = ({ playerName }: { playerName: string }) => {
 
   return (
     <div className="flex items-center justify-center">
-      <input
-        type="number"
-        min="0"
-        max="99"
+      <NumericInput
         value={gameState.scores[playerName].numCubes}
-        onChange={(e) => handleCubesChange(parseInt(e.target.value) || 0)}
-        className="bg-white text-center"
+        onChange={(value) => handleCubesChange(value)}
+        className="w-8 h-8 bg-white text-center"
       />
     </div>
   );

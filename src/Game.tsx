@@ -1,6 +1,7 @@
 import { useGameState } from "./GameContext";
 import marble1 from "./assets/styling/marble-1.jpg";
 import { ScoreCard } from "./scorecard/ScoreCard";
+import { CubesWizard } from "./wizard/CubesWizard";
 import { PiecesWizard } from "./wizard/PiecesWizard";
 
 const defaultPlayerNames = [
@@ -67,9 +68,9 @@ export const Game = () => {
         </div>
       ) : gameState.step !== "done" ? (
         gameState.step !== "cubes" ? (
-          <PiecesWizard styling={{ img: marble1, color: "white" }} />
+          <PiecesWizard />
         ) : (
-          <div>TODO: cubes</div>
+          <CubesWizard />
         )
       ) : (
         <ScoreCard />

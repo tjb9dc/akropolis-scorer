@@ -2,8 +2,9 @@ import star from "../assets/icons/star.png";
 import hexagon from "../assets/icons/hexagon.png";
 import { useGameState } from "../GameContext";
 import type { GameState, PiecesState } from "../GameState";
+import { NumericInput } from "../utils/NumericInput";
 
-export const PiecesScore = ({
+export const PiecesCell = ({
   playerName,
   pieceType,
 }: {
@@ -28,25 +29,18 @@ export const PiecesScore = ({
       <div className="flex items-center gap-4">
         <div className="relative w-12 h-12">
           <img src={star} alt="" className="object-contain -z-10" />
-          <input
-            inputMode="numeric"
-            type="number"
-            min="0"
-            max="99"
+          <NumericInput
             value={score.numStars}
-            onChange={(e) => handleStarsChange(parseInt(e.target.value) || 0)}
+            onChange={(value) => handleStarsChange(value)}
             className="absolute inset-0 p-2 rounded bg-transparent text-center"
           />
         </div>
         x
         <div className="relative w-12 h-12">
           <img src={hexagon} alt="" className="object-contain -z-10" />
-          <input
-            type="number"
-            min="0"
-            max="99"
+          <NumericInput
             value={score.numPieces}
-            onChange={(e) => handlePiecesChange(parseInt(e.target.value) || 0)}
+            onChange={(value) => handlePiecesChange(value)}
             className="absolute inset-0 p-2 rounded bg-transparent text-center"
           />
         </div>

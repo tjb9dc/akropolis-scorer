@@ -6,87 +6,132 @@ import gardenImg from "../assets/pieces/garden.png";
 import star from "../assets/icons/star.png";
 import hexagon from "../assets/icons/hexagon.png";
 import { useGameState } from "../GameContext";
+import { NumericInput } from "../utils/NumericInput";
 
 type PiecesStep = "houses" | "markets" | "barracks" | "temples" | "gardens";
 
-const assertNever = (step: never) => {
-  throw new Error("Unexpected step: " + step);
+type PieceConfig = {
+  img: string;
+  starValue: number;
 };
 
-const getImg = (step: PiecesStep) => {
+const getPieceConfig = (step: PiecesStep): PieceConfig => {
   switch (step) {
     case "houses":
-      return houseImg;
+      return { img: houseImg, starValue: 1 };
     case "markets":
-      return marketImg;
+      return { img: marketImg, starValue: 2 };
     case "barracks":
-      return barracksImg;
+      return { img: barracksImg, starValue: 2 };
     case "temples":
-      return templeImg;
+      return { img: templeImg, starValue: 2 };
     case "gardens":
-      return gardenImg;
+      return { img: gardenImg, starValue: 3 };
     default:
-      assertNever(step);
+      throw new Error("Unexpected step: " + step);
   }
 };
 
-export const PiecesWizard = ({
-  styling,
-}: {
-  styling: {
-    img: string;
-    color: string;
-  };
-}) => {
-  const { gameState, updateNumPieces, updateNumStars } = useGameState();
+export const PiecesWizard = () => {
+  const { gameState, updateNumPieces, updateNumStars, previousStep, nextStep } =
+    useGameState();
 
   const step = gameState.step as PiecesStep;
+  const { img, starValue } = getPieceConfig(step);
 
   return (
-    <div>
+    <div className="flex flex-col items-center p-4">
+      <img src={img} alt={step} className="w-24" />
+      {/* TODO: Add some information on the scoring rules for each piece */}
       {Object.keys(gameState.scores).map((player) => (
-        <div key={player} className="flex items-center gap-2">
-          <div>{player}</div>
-          <img src={getImg(step)} alt={step} />
+        <div key={player} className="flex flex-col items-center p-2">
+          <div className="text-2xl font-bold">{player}</div>
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  updateNumStars(
+                    player,
+                    step,
+                    Math.max(
+                      0,
+                      gameState.scores[player][step].numStars - starValue
+                    )
+                  )
+                }
+                className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100"
+              >
+                -
+              </button>
               <div className="relative w-12 h-12">
                 <img src={star} alt="" className="object-contain -z-10" />
-                <input
-                  inputMode="numeric"
-                  type="number"
-                  min="0"
-                  max="99"
+                <NumericInput
                   value={gameState.scores[player][step].numStars}
-                  onChange={(e) =>
-                    updateNumStars(player, step, parseInt(e.target.value) || 0)
-                  }
+                  onChange={(value) => updateNumStars(player, step, value)}
                   className="absolute inset-0 p-2 rounded bg-transparent text-center"
                 />
               </div>
-              x
+              <button
+                onClick={() =>
+                  updateNumStars(
+                    player,
+                    step,
+                    Math.min(
+                      99,
+                      gameState.scores[player][step].numStars + starValue
+                    )
+                  )
+                }
+                className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100"
+              >
+                +
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  updateNumPieces(
+                    player,
+                    step,
+                    Math.max(0, gameState.scores[player][step].numPieces - 1)
+                  )
+                }
+                className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100"
+              >
+                -
+              </button>
               <div className="relative w-12 h-12">
                 <img src={hexagon} alt="" className="object-contain -z-10" />
-                <input
-                  type="number"
-                  min="0"
-                  max="99"
+                <NumericInput
                   value={gameState.scores[player][step].numPieces}
-                  onChange={(e) =>
-                    updateNumPieces(player, step, parseInt(e.target.value) || 0)
-                  }
+                  onChange={(value) => updateNumPieces(player, step, value)}
                   className="absolute inset-0 p-2 rounded bg-transparent text-center"
                 />
               </div>
+              <button
+                onClick={() =>
+                  updateNumPieces(
+                    player,
+                    step,
+                    Math.min(99, gameState.scores[player][step].numPieces + 1)
+                  )
+                }
+                className="w-8 h-8 flex items-center justify-center border rounded hover:bg-gray-100"
+              >
+                +
+              </button>
             </div>
-            <div className="text-center">
-              ={" "}
+            <div className="text-center font-bold">
               {gameState.scores[player][step].numStars *
                 gameState.scores[player][step].numPieces}
             </div>
           </div>
         </div>
       ))}
+      <div className="flex justify-between w-full">
+        <button onClick={previousStep}>Previous</button>
+        <button onClick={nextStep}>Next</button>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,11 @@
 import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
-import { nextStep, type GameState, type PiecesState } from "./GameState";
+import {
+  nextStep,
+  previousStep,
+  type GameState,
+  type PiecesState,
+} from "./GameState";
 
 type PieceType = keyof Omit<GameState["scores"][string], "cubes">;
 
@@ -18,6 +23,8 @@ interface GameContextType {
   ) => void;
   updateNumCubes: (playerName: string, score: number) => void;
   nextStep: () => void;
+  previousStep: () => void;
+  resetGame: () => void;
   addPlayer: (playerName: string) => void;
   removePlayer: (playerName: string) => void;
   updatePlayerName: (playerName: string, newName: string) => void;
@@ -44,13 +51,13 @@ export function GameProvider({
   initialState,
   onStateChange,
 }: GameProviderProps) {
-  const updateNumCubes = (playerId: string, score: number) => {
+  const updateNumCubes = (playerName: string, score: number) => {
     onStateChange({
       ...initialState,
       scores: {
         ...initialState.scores,
-        [playerId]: {
-          ...initialState.scores[playerId],
+        [playerName]: {
+          ...initialState.scores[playerName],
           numCubes: score,
         },
       },
@@ -58,7 +65,7 @@ export function GameProvider({
   };
 
   const updateNumPieces = (
-    playerId: string,
+    playerName: string,
     pieceType: PieceType,
     numPieces: number
   ) => {
@@ -66,10 +73,10 @@ export function GameProvider({
       ...initialState,
       scores: {
         ...initialState.scores,
-        [playerId]: {
-          ...initialState.scores[playerId],
+        [playerName]: {
+          ...initialState.scores[playerName],
           [pieceType]: {
-            ...(initialState.scores[playerId][pieceType] as PiecesState),
+            ...(initialState.scores[playerName][pieceType] as PiecesState),
             numPieces,
           },
         },
@@ -78,7 +85,7 @@ export function GameProvider({
   };
 
   const updateNumStars = (
-    playerId: string,
+    playerName: string,
     pieceType: PieceType,
     numStars: number
   ) => {
@@ -86,10 +93,10 @@ export function GameProvider({
       ...initialState,
       scores: {
         ...initialState.scores,
-        [playerId]: {
-          ...initialState.scores[playerId],
+        [playerName]: {
+          ...initialState.scores[playerName],
           [pieceType]: {
-            ...(initialState.scores[playerId][pieceType] as PiecesState),
+            ...(initialState.scores[playerName][pieceType] as PiecesState),
             numStars,
           },
         },
@@ -137,6 +144,26 @@ export function GameProvider({
     });
   };
 
+  const resetGame = () => {
+    onStateChange({
+      ...initialState,
+      step: "notStarted",
+      scores: Object.fromEntries(
+        Object.keys(initialState.scores).map((playerName) => [
+          playerName,
+          {
+            houses: { numStars: 0, numPieces: 0 },
+            markets: { numStars: 0, numPieces: 0 },
+            barracks: { numStars: 0, numPieces: 0 },
+            temples: { numStars: 0, numPieces: 0 },
+            gardens: { numStars: 0, numPieces: 0 },
+            numCubes: 0,
+          },
+        ])
+      ),
+    });
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -150,6 +177,13 @@ export function GameProvider({
             step: nextStep(initialState.step),
           });
         },
+        previousStep: () => {
+          onStateChange({
+            ...initialState,
+            step: previousStep(initialState.step),
+          });
+        },
+        resetGame,
         addPlayer,
         removePlayer,
         updatePlayerName,
