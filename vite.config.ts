@@ -15,9 +15,9 @@ export default defineConfig({
       includeAssets: ["favicon.ico", "icon-192.png", "icon-512.png"],
       injectRegister: "auto",
       manifest: {
-        name: "My Tool",
-        short_name: "Tool",
-        start_url: "/",
+        name: "Akropolis Scorer",
+        short_name: "Akropolis Scorer",
+        start_url: "/akropolis-scorer/",
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#000000",
